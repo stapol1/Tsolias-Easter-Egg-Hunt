@@ -118,3 +118,13 @@ function gameLoop() {
 
 document.addEventListener("keydown", e => keys[e.key] = true);
 document.addEventListener("keyup", e => keys[e.key] = false);
+
+// Mobile touch support
+function bindTouch(id, key) {
+  const el = document.getElementById(id);
+  el.addEventListener("touchstart", () => keys[key] = true);
+  el.addEventListener("touchend", () => keys[key] = false);
+}
+bindTouch("left", "ArrowLeft");
+bindTouch("right", "ArrowRight");
+bindTouch("jump", "ArrowUp");
