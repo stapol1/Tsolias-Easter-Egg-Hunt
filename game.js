@@ -5,6 +5,18 @@ let tsoliasImg = new Image();
 let eggImg = new Image();
 let acropolisImg = new Image();
 
+let loaded = 0;
+function checkStart() {
+  loaded++;
+  if (loaded === 3) {
+    gameLoop();
+  }
+}
+
+tsoliasImg.onload = checkStart;
+eggImg.onload = checkStart;
+acropolisImg.onload = checkStart;
+
 tsoliasImg.src = "assets/images/tsolias_clean.png";
 eggImg.src = "assets/images/egg_clean.png";
 acropolisImg.src = "assets/images/acropolis_clean.png";
@@ -103,8 +115,6 @@ function gameLoop() {
   draw();
   requestAnimationFrame(gameLoop);
 }
-
-gameLoop();
 
 document.addEventListener("keydown", e => keys[e.key] = true);
 document.addEventListener("keyup", e => keys[e.key] = false);
