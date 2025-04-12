@@ -2,62 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tsolias Egg Hunt</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      background: #87ceeb;
+      padding: 0;
+      background: #000;
       overflow: hidden;
-      font-family: monospace;
     }
     canvas {
-      background: #a3d9ff;
-      image-rendering: pixelated;
-      width: 100%;
-      max-width: 800px;
-      height: auto;
       display: block;
-      margin: 0 auto;
-    }
-    #info {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #000;
-      font-size: 1rem;
+      margin: auto;
+      background: url('assets/images/background.png') repeat;
+      background-size: cover;
+      image-rendering: pixelated;
     }
     .controls {
-      position: fixed;
+      position: absolute;
       bottom: 20px;
       width: 100%;
       display: flex;
       justify-content: center;
-      gap: 30px;
+      gap: 10px;
       z-index: 10;
     }
     .btn {
-      background: #fff;
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      border-radius: 8px;
-      border: 2px solid #333;
+      width: 60px;
+      height: 60px;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid #fff;
+      border-radius: 10px;
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      line-height: 60px;
       user-select: none;
-      touch-action: manipulation;
+      backdrop-filter: blur(5px);
+    }
+    #timer, #record {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-family: monospace;
+      color: white;
+      font-size: 18px;
+      z-index: 10;
+    }
+    #record {
+      top: 35px;
     }
   </style>
 </head>
 <body>
-  <div id="info">Time: <span id="timer">0.00</span>s | Personal Record: <span id="record">--</span>s</div>
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
-
-  <!-- Mobile Controls -->
+  <canvas id="game" width="800" height="480"></canvas>
+  <div id="timer">Time: 0.00s</div>
+  <div id="record">Personal Record: --</div>
   <div class="controls">
-    <div class="btn" id="left">←</div>
-    <div class="btn" id="jump">↑</div>
-    <div class="btn" id="right">→</div>
+    <div class="btn" id="left">◀</div>
+    <div class="btn" id="right">▶</div>
+    <div class="btn" id="up">⤴</div>
   </div>
-
   <script src="game.js"></script>
 </body>
 </html>
