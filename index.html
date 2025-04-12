@@ -5,64 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tsolias Egg Hunt</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      background: #000;
       overflow: hidden;
+      background-color: #1e1e1e;
+      font-family: monospace;
     }
-    canvas {
+    #gameCanvas {
       display: block;
-      margin: auto;
-      background: url('assets/images/background.png') repeat;
-      background-size: cover;
-      image-rendering: pixelated;
+      margin: 0 auto;
+      background: #88c0d0;
     }
-    .controls {
-      position: absolute;
-      bottom: 20px;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      z-index: 10;
-    }
-    .btn {
-      width: 60px;
-      height: 60px;
-      background: rgba(255,255,255,0.2);
-      border: 2px solid #fff;
-      border-radius: 10px;
-      color: white;
-      font-size: 24px;
-      text-align: center;
-      line-height: 60px;
-      user-select: none;
-      backdrop-filter: blur(5px);
-    }
-    #timer, #record {
+    #ui {
       position: absolute;
       top: 10px;
-      left: 10px;
-      font-family: monospace;
+      left: 50%;
+      transform: translateX(-50%);
       color: white;
-      font-size: 18px;
-      z-index: 10;
-    }
-    #record {
-      top: 35px;
+      text-align: center;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
-  <canvas id="game" width="800" height="480"></canvas>
-  <div id="timer">Time: 0.00s</div>
-  <div id="record">Personal Record: --</div>
-  <div class="controls">
-    <div class="btn" id="left">◀</div>
-    <div class="btn" id="right">▶</div>
-    <div class="btn" id="up">⤴</div>
+  <div id="ui">
+    <div id="timer">Time: 0.00s</div>
+    <div id="record">Personal Record: --</div>
   </div>
+  <canvas id="gameCanvas" width="800" height="480"></canvas>
   <script src="game.js"></script>
 </body>
 </html>
