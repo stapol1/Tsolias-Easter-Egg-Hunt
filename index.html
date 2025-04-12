@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tsolias Egg Hunt</title>
   <style>
     body {
       margin: 0;
       background: #87ceeb;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      font-family: monospace;
     }
     canvas {
       background: #a3d9ff;
@@ -20,20 +17,47 @@
       width: 100%;
       max-width: 800px;
       height: auto;
+      display: block;
+      margin: 0 auto;
     }
     #info {
       position: absolute;
       top: 10px;
       left: 10px;
       color: #000;
-      font-family: monospace;
       font-size: 1rem;
+    }
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      z-index: 10;
+    }
+    .btn {
+      background: #fff;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      border: 2px solid #333;
+      user-select: none;
+      touch-action: manipulation;
     }
   </style>
 </head>
 <body>
   <div id="info">Time: <span id="timer">0.00</span>s | Personal Record: <span id="record">--</span>s</div>
   <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+  <!-- Mobile Controls -->
+  <div class="controls">
+    <div class="btn" id="left">←</div>
+    <div class="btn" id="jump">↑</div>
+    <div class="btn" id="right">→</div>
+  </div>
+
   <script src="game.js"></script>
 </body>
 </html>
