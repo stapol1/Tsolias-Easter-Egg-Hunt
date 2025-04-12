@@ -1,1 +1,39 @@
-<!DOCTYPE html><html><head><title>Tsolias Game</title></head><body><canvas></canvas></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tsolias Egg Hunt</title>
+  <style>
+    body {
+      margin: 0;
+      background: #87ceeb;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    canvas {
+      background: #a3d9ff;
+      image-rendering: pixelated;
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+    }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #000;
+      font-family: monospace;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">Time: <span id="timer">0.00</span>s | Personal Record: <span id="record">--</span>s</div>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <script src="game.js"></script>
+</body>
+</html>
