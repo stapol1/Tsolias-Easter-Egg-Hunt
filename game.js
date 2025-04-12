@@ -1,25 +1,9 @@
-const canvas = document.getElementById("game");
+const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const keys = {};
-const eggs = [];
-let collected = 0;
-let startTime = null;
-let timerInterval;
-let personalBest = localStorage.getItem("personalBest");
-
-const timerEl = document.getElementById("timer");
-const recordEl = document.getElementById("record");
-
-if (personalBest) {
-  recordEl.innerText = `Personal Record: ${parseFloat(personalBest).toFixed(2)}s`;
-}
-
-const tsolias = new Image();
-tsolias.src = "assets/images/tsolias.png";
+// Load images
+const tsoliasImg = new Image();
+tsoliasImg.src = "assets/images/tsolias.png";
 
 const eggImg = new Image();
 eggImg.src = "assets/images/egg.png";
@@ -27,95 +11,117 @@ eggImg.src = "assets/images/egg.png";
 const acropolisImg = new Image();
 acropolisImg.src = "assets/images/acropolis.png";
 
-let player = {
-  x: 50,
-  y: canvas.height - 100,
-  w: 40,
-  h: 60,
-  vx: 0,
-  vy: 0,
-  grounded: false,
-  speed: 4,
-  jump: -12
-};
+// Game objects
+let player = { x: 50, y: 400, width: 40, height: 40, dy: 0, grounded: false };
+let eggs = [];
+let gravity = 0.8;
+let jumpPower = -12;
+let score = 0;
+let totalEggs = 20;
+let platforms = [
+  { x: 0, y: 440, width: 800, height: 40 },
+  { x: 200, y: 350, width: 100, height: 10 },
+  { x: 400, y: 300, width: 120, height: 10 },
+  { x: 600, y: 220, width: 100, height: 10 }
+];
+let acropolis = { x: 700, y: 160, width: 80, height: 80 };
 
-const gravity = 0.6;
+// Timer
+let startTime = Date.now();
+let finished = false;
+let personalRecord = localStorage.getItem("record") || "--";
 
-function spawnEggs(count) {
-  eggs.length = 0;
-  for (let i = 0; i < count; i++) {
-    eggs.push({
-      x: Math.random() * (canvas.width - 32),
-      y: Math.random() * (canvas.height - 150) + 50,
-      collected: false
-    });
-  }
+// Generate eggs
+for (let i = 0; i < totalEggs; i++) {
+  eggs.push({
+    x: Math.random() * 700 + 20,
+    y: Math.random() * 300 + 50,
+    collected: false
+  });
 }
 
-let acropolis = {
-  x: canvas.width - 120,
-  y: canvas.height - 120,
-  w: 100,
-  h: 100
-};
+document.getElementById("record").textContent = `Personal Record: ${personalRecord === "--" ? "--" : parseFloat(personalRecord).toFixed(2)}s`;
 
 function update() {
-  player.vx = 0;
-  if (keys["ArrowLeft"]) player.vx = -player.speed;
-  if (keys["ArrowRight"]) player.vx = player.speed;
+  if (finished) return;
 
-  player.vy += gravity;
-  player.x += player.vx;
-  player.y += player.vy;
+  // Timer
+  const timeElapsed = (Date.now() - startTime) / 1000;
+  document.getElementById("timer").textContent = `Time: ${timeElapsed.toFixed(2)}s`;
 
-  if (player.y + player.h > canvas.height) {
-    player.y = canvas.height - player.h;
-    player.vy = 0;
-    player.grounded = true;
-  } else {
-    player.grounded = false;
-  }
+  // Physics
+  player.dy += gravity;
+  player.y += player.dy;
 
-  // Collision with eggs
-  eggs.forEach(egg => {
-    if (!egg.collected &&
-        player.x < egg.x + 32 &&
-        player.x + player.w > egg.x &&
-        player.y < egg.y + 32 &&
-        player.y + player.h > egg.y) {
-      egg.collected = true;
-      collected++;
+  // Platform collision
+  player.grounded = false;
+  platforms.forEach(p => {
+    if (player.x < p.x + p.width &&
+        player.x + player.width > p.x &&
+        player.y + player.height < p.y + 10 &&
+        player.y + player.height + player.dy >= p.y) {
+      player.y = p.y - player.height;
+      player.dy = 0;
+      player.grounded = true;
     }
   });
 
-  // Check for win
-  if (collected === eggs.length &&
-      player.x < acropolis.x + acropolis.w &&
-      player.x + player.w > acropolis.x &&
-      player.y < acropolis.y + acropolis.h &&
-      player.y + player.h > acropolis.y) {
-    clearInterval(timerInterval);
-    const timeTaken = (performance.now() - startTime) / 1000;
-    if (!personalBest || timeTaken < personalBest) {
-      localStorage.setItem("personalBest", timeTaken);
-      recordEl.innerText = `Personal Record: ${timeTaken.toFixed(2)}s`;
+  // Collect eggs
+  eggs.forEach(egg => {
+    if (!egg.collected &&
+        player.x < egg.x + 20 &&
+        player.x + player.width > egg.x &&
+        player.y < egg.y + 20 &&
+        player.y + player.height > egg.y) {
+      egg.collected = true;
+      score++;
     }
-    alert(`You won in ${timeTaken.toFixed(2)} seconds!`);
-    resetGame();
+  });
+
+  // Win condition
+  if (score === totalEggs &&
+      player.x < acropolis.x + acropolis.width &&
+      player.x + player.width > acropolis.x &&
+      player.y < acropolis.y + acropolis.height &&
+      player.y + player.height > acropolis.y) {
+    finished = true;
+    const endTime = (Date.now() - startTime) / 1000;
+    document.getElementById("timer").textContent = `Finished in ${endTime.toFixed(2)}s`;
+
+    if (personalRecord === "--" || endTime < parseFloat(personalRecord)) {
+      localStorage.setItem("record", endTime.toFixed(2));
+      document.getElementById("record").textContent = `Personal Record: ${endTime.toFixed(2)}s`;
+    }
   }
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(tsolias, player.x, player.y, player.w, player.h);
 
+  // Background
+  ctx.fillStyle = "#88c0d0";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Platforms
+  ctx.fillStyle = "#444";
+  platforms.forEach(p => {
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+  });
+
+  // Eggs
   eggs.forEach(egg => {
     if (!egg.collected) {
-      ctx.drawImage(eggImg, egg.x, egg.y, 32, 32);
+      ctx.drawImage(eggImg, egg.x, egg.y, 20, 20);
     }
   });
 
-  ctx.drawImage(acropolisImg, acropolis.x, acropolis.y, acropolis.w, acropolis.h);
+  // Player
+  ctx.drawImage(tsoliasImg, player.x, player.y, player.width, player.height);
+
+  // Acropolis
+  if (score === totalEggs) {
+    ctx.drawImage(acropolisImg, acropolis.x, acropolis.y, acropolis.width, acropolis.height);
+  }
 }
 
 function loop() {
@@ -124,41 +130,12 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-function startTimer() {
-  startTime = performance.now();
-  timerInterval = setInterval(() => {
-    const current = (performance.now() - startTime) / 1000;
-    timerEl.innerText = `Time: ${current.toFixed(2)}s`;
-  }, 100);
-}
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && player.grounded) {
+    player.dy = jumpPower;
+  }
+  if (e.code === "ArrowRight") player.x += 10;
+  if (e.code === "ArrowLeft") player.x -= 10;
+});
 
-function resetGame() {
-  player.x = 50;
-  player.y = canvas.height - 100;
-  collected = 0;
-  spawnEggs(20);
-  startTimer();
-}
-
-function bindTouch(id, key) {
-  const el = document.getElementById(id);
-  el.addEventListener("touchstart", e => {
-    e.preventDefault();
-    keys[key] = true;
-  }, { passive: false });
-
-  el.addEventListener("touchend", e => {
-    e.preventDefault();
-    keys[key] = false;
-  }, { passive: false });
-}
-
-bindTouch("left", "ArrowLeft");
-bindTouch("right", "ArrowRight");
-bindTouch("up", "ArrowUp");
-
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-resetGame();
 loop();
