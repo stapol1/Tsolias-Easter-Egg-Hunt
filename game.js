@@ -1,7 +1,6 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Load images
 const tsoliasImg = new Image();
 tsoliasImg.src = "assets/images/tsolias.png";
 
@@ -31,7 +30,6 @@ let startTime = Date.now();
 let finished = false;
 let personalRecord = localStorage.getItem("record") || "--";
 
-// Generate eggs
 for (let i = 0; i < totalEggs; i++) {
   eggs.push({
     x: Math.random() * 700 + 20,
@@ -40,20 +38,18 @@ for (let i = 0; i < totalEggs; i++) {
   });
 }
 
-document.getElementById("record").textContent = `Personal Record: ${personalRecord === "--" ? "--" : parseFloat(personalRecord).toFixed(2)}s`;
+document.getElementById("record").textContent =
+  `Personal Record: ${personalRecord === "--" ? "--" : parseFloat(personalRecord).toFixed(2)}s`;
 
 function update() {
   if (finished) return;
 
-  // Timer
   const timeElapsed = (Date.now() - startTime) / 1000;
   document.getElementById("timer").textContent = `Time: ${timeElapsed.toFixed(2)}s`;
 
-  // Physics
   player.dy += gravity;
   player.y += player.dy;
 
-  // Platform collision
   player.grounded = false;
   platforms.forEach(p => {
     if (player.x < p.x + p.width &&
@@ -66,7 +62,6 @@ function update() {
     }
   });
 
-  // Collect eggs
   eggs.forEach(egg => {
     if (!egg.collected &&
         player.x < egg.x + 20 &&
@@ -78,7 +73,6 @@ function update() {
     }
   });
 
-  // Win condition
   if (score === totalEggs &&
       player.x < acropolis.x + acropolis.width &&
       player.x + player.width > acropolis.x &&
@@ -97,28 +91,20 @@ function update() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Background
   ctx.fillStyle = "#88c0d0";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Platforms
   ctx.fillStyle = "#444";
-  platforms.forEach(p => {
-    ctx.fillRect(p.x, p.y, p.width, p.height);
-  });
+  platforms.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
 
-  // Eggs
   eggs.forEach(egg => {
     if (!egg.collected) {
       ctx.drawImage(eggImg, egg.x, egg.y, 20, 20);
     }
   });
 
-  // Player
   ctx.drawImage(tsoliasImg, player.x, player.y, player.width, player.height);
 
-  // Acropolis
   if (score === totalEggs) {
     ctx.drawImage(acropolisImg, acropolis.x, acropolis.y, acropolis.width, acropolis.height);
   }
@@ -130,6 +116,17 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
+// Wait for all images to load before starting the game
+let imagesLoaded = 0;
+[tsoliasImg, eggImg, acropolisImg].forEach(img => {
+  img.onload = () => {
+    imagesLoaded++;
+    if (imagesLoaded === 3) {
+      loop();
+    }
+  };
+});
+
 document.addEventListener("keydown", e => {
   if (e.code === "Space" && player.grounded) {
     player.dy = jumpPower;
@@ -137,5 +134,3 @@ document.addEventListener("keydown", e => {
   if (e.code === "ArrowRight") player.x += 10;
   if (e.code === "ArrowLeft") player.x -= 10;
 });
-
-loop();
