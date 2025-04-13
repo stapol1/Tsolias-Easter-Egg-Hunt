@@ -10,6 +10,9 @@ eggImg.src = "assets/images/egg.png";
 const acropolisImg = new Image();
 acropolisImg.src = "assets/images/acropolis.png";
 
+const bgImg = new Image();
+bgImg.src = "assets/images/background.png";
+
 // Game objects
 let player = { x: 50, y: 400, width: 40, height: 40, dy: 0, grounded: false };
 let eggs = [];
@@ -17,12 +20,17 @@ let gravity = 0.8;
 let jumpPower = -12;
 let score = 0;
 let totalEggs = 20;
+let moveLeft = false;
+let moveRight = false;
+let jumpQueued = false;
+
 let platforms = [
   { x: 0, y: 440, width: 800, height: 40 },
   { x: 200, y: 350, width: 100, height: 10 },
   { x: 400, y: 300, width: 120, height: 10 },
   { x: 600, y: 220, width: 100, height: 10 }
 ];
+
 let acropolis = { x: 700, y: 160, width: 80, height: 80 };
 
 // Timer
@@ -50,6 +58,9 @@ function update() {
   player.dy += gravity;
   player.y += player.dy;
 
+  if (moveLeft) player.x -= 4;
+  if (moveRight) player.x += 4;
+
   player.grounded = false;
   platforms.forEach(p => {
     if (player.x < p.x + p.width &&
@@ -61,6 +72,11 @@ function update() {
       player.grounded = true;
     }
   });
+
+  if (jumpQueued && player.grounded) {
+    player.dy = jumpPower;
+    jumpQueued = false;
+  }
 
   eggs.forEach(egg => {
     if (!egg.collected &&
@@ -91,8 +107,7 @@ function update() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#88c0d0";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "#444";
   platforms.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
@@ -118,19 +133,31 @@ function loop() {
 
 // Wait for all images to load before starting the game
 let imagesLoaded = 0;
-[tsoliasImg, eggImg, acropolisImg].forEach(img => {
+[tsoliasImg, eggImg, acropolisImg, bgImg].forEach(img => {
   img.onload = () => {
     imagesLoaded++;
-    if (imagesLoaded === 3) {
+    if (imagesLoaded === 4) {
       loop();
     }
   };
 });
 
+// Keyboard input
 document.addEventListener("keydown", e => {
-  if (e.code === "Space" && player.grounded) {
-    player.dy = jumpPower;
-  }
-  if (e.code === "ArrowRight") player.x += 10;
-  if (e.code === "ArrowLeft") player.x -= 10;
+  if (e.code === "ArrowLeft") moveLeft = true;
+  if (e.code === "ArrowRight") moveRight = true;
+  if (e.code === "Space") jumpQueued = true;
 });
+document.addEventListener("keyup", e => {
+  if (e.code === "ArrowLeft") moveLeft = false;
+  if (e.code === "ArrowRight") moveRight = false;
+});
+
+// Touch controls
+document.getElementById("leftBtn").addEventListener("touchstart", () => moveLeft = true);
+document.getElementById("leftBtn").addEventListener("touchend", () => moveLeft = false);
+
+document.getElementById("rightBtn").addEventListener("touchstart", () => moveRight = true);
+document.getElementById("rightBtn").addEventListener("touchend", () => moveRight = false);
+
+document.getElementById("jumpBtn").addEventListener("touchstart", () => jumpQueued = true);
