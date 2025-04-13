@@ -14,7 +14,7 @@
     #gameCanvas {
       display: block;
       margin: 0 auto;
-      background: #88c0d0;
+      background: #000;
     }
     #ui {
       position: absolute;
@@ -26,6 +26,24 @@
       font-size: 1.2rem;
       z-index: 10;
     }
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 20;
+    }
+    .btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
@@ -34,6 +52,13 @@
     <div id="record">Personal Record: --</div>
   </div>
   <canvas id="gameCanvas" width="800" height="480"></canvas>
+
+  <div class="controls">
+    <div class="btn" id="leftBtn">←</div>
+    <div class="btn" id="jumpBtn">⤒</div>
+    <div class="btn" id="rightBtn">→</div>
+  </div>
+
   <script src="game.js"></script>
 </body>
 </html>
